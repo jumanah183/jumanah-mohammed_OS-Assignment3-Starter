@@ -85,9 +85,15 @@ class SharedResources {
     public static void logExecution(String message) {
         // TODO: Protect this critical section with a lock
         // RACE CONDITION: ArrayList is not thread-safe!
-        executionLog.add(message);
+         logLock.lock();
+        try {
+            executionLog.add(message);
+        } finally {
+            logLock.unlock();
+        }
     }
-}
+    }
+
 
 // Class representing a process that implements Runnable to be run by a thread
 class Process implements Runnable {
@@ -114,11 +120,12 @@ class Process implements Runnable {
     public void run() {
         // TODO #3: Acquire CPU semaphore before executing
         // This ensures only allowed number of processes run simultaneously
-        
-        try {
-            if (startTime == -1) {
-                startTime = System.currentTimeMillis();
-            }
+           try {
+            SharedResources.cpuSemaphore.acquire();
+            try {
+                if (startTime == -1) {
+                    startTime = System.currentTimeMillis();
+                }
             
             // Increment context switch counter
             SharedResources.incrementContextSwitch();
@@ -175,8 +182,10 @@ class Process implements Runnable {
             System.out.println();
             
         } finally {
-            // TODO #4: Release CPU semaphore here
-            // Always release in finally block to prevent deadlocks!
+                SharedResources.cpuSemaphore.release();
+            }
+             } catch (InterruptedException e) {
+            System.out.println(Colors.RED + "  ✗ " + name + " semaphore interrupted." + Colors.RESET);
         }
     }
     
