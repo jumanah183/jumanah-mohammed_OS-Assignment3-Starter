@@ -6,7 +6,7 @@
 
 ---
 
-## 🎥 VIDEO DEMONSTRATION LINK (REQUIRED)
+## 🎥 VIDEO DEMONSTRATION LINK (https://drive.google.com/file/d/1mcWlPa-W8Y3kvyQmt-dcwIPEkeqPNBRq/view?usp=drivesdk)
 
 > **⚠️ IMPORTANT: This section is REQUIRED for grading!**
 > 
