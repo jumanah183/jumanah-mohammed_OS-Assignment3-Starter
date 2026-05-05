@@ -1,8 +1,8 @@
 # Assignment 3 - Complete Documentation
 
-**Student Name**: [Your Full Name]  
-**Student ID**: [Your ID]  
-**Date Submitted**: [Submission Date]
+**Student Name**: [jumanah mohammed al-sharif]  
+**Student ID**: [445052183]  
+**Date Submitted**: [5/5/2026]
 
 ---
 
@@ -32,41 +32,41 @@
 Document your development process with **minimum 3 entries** showing progression:
 
 ### Entry 1 - [Date, Time]
-**What I implemented**: 
+**What I implemented**: Defined the shared resources structure and identified critical sections. I set up the SharedResources class with counters for context switches, completed processes, and total waiting time.
 
-**Challenges encountered**: 
+**Challenges encountered**: Identifying which variables are susceptible to "Race Conditions" when multiple threads (processes) access them simultaneously.
 
-**How I solved it**: 
+**How I solved it**: ecided to use ReentrantLock for fine-grained locking. I created separate locks for each counter (e.g., contextSwitchLock, waitingTimeLock) to ensure that incrementing one counter doesn't block another, improving concurrency.
 
-**Testing approach**: 
+**Testing approach**: Print statements to check if the initial values were being initialized correctly.
 
-**Time spent**: 
+**Time spent**: 1.5 Hours
 
 ---
 
 ### Entry 2 - [Date, Time]
-**What I implemented**: 
+**What I implemented**: Integrated Semaphore for CPU management and implemented the locking logic in the run() method of the Process class.
 
-**Challenges encountered**: 
+**Challenges encountered**: Ensuring that the semaphore is always released, even if a thread is interrupted or an error occurs. Failing to do this would lead to a "Deadlock" where the CPU remains permanently busy.
 
-**How I solved it**: 
+**How I solved it**: Used the try-finally block pattern. I placed the semaphore.acquire() outside the try block and semaphore.release() inside the finally block to guarantee the resource is freed.
 
-**Testing approach**: 
+**Testing approach**: Running the simulation with a small number of processes (3-5) to observe the "Acquire" and "Release" flow in the console.
 
-**Time spent**: 
+**Time spent**: 2.5 Hours
 
 ---
 
 ### Entry 3 - [Date, Time]
-**What I implemented**: 
+**What I implemented**: Finalized the executionLog protection and added the "Run to Completion" logic for the last remaining process in the queue.
 
-**Challenges encountered**: 
+**Challenges encountered**: The ArrayList used for logging is not thread-safe, and concurrent access caused ConcurrentModificationException during the final summary.
 
-**How I solved it**: 
+**How I solved it**: Wrapped all interactions with the executionLog (especially the .add() method) inside a logLock.lock() block to ensure only one thread writes to the log at a time.
 
-**Testing approach**: 
+**Testing approach**: Stress testing the simulation with a large number of processes (20+) and a small time quantum to force frequent context switches and verify data consistency in the final statistics table.
 
-**Time spent**: 
+**Time spent**: 1.5 Hours
 
 ---
 
