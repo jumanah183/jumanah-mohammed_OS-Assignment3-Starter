@@ -335,29 +335,29 @@ Synchronization is like having rules or a "talking stick" in the kitchen. Withou
 
 **Repository URL**: https://github.com/jumanah183/jumanah-mohammed_OS-Assignment3-Starter/edit/main/ASSIGNMENT_DOCUMENTATION.md
 
-**Number of commits**: 
+**Number of commits**: 6
 
 **Commit messages**: 
-1. 
-2. 
-3. 
-4. 
-
----
+1.	Refactor: Ensure semaphore release using try-finally in runToCompletion
+2.	Refactor: Add try-catch-finally block to ensure semaphore release
+3.	Protected totalWaitingTime with waitingTimeLock
+4.	Protected contextSwitchCount with ReentrantLock
+5.	Task 1: Define ReentrantLocks for contextSwitchCount, completedProcessCount, and totalWaitingTime
+6.	set my student id: 445052183
 
 ## Summary
 
 **Total time spent on assignment**: 
 
 **Key takeaways**: 
-1. 
-2. 
-3. 
+ 1.	Understanding the difference between Mutual Exclusion (using Locks) and Signaling (using Semaphores).
+2.	Learning how to identify Critical Sections in a multi-threaded environment to prevent data corruption.
+3.	Realizing the importance of using try-finally blocks to ensure that locks and semaphores are always released, preventing Deadlocks.
 
 **Most challenging aspect**: 
-
+The most challenging part was ensuring that the cpuSemaphore was acquired and released correctly within the process lifecycle, especially when dealing with the time quantum and context switching logic.
 **What I'm most proud of**: 
-
+I am proud of successfully implementing a thread-safe scheduler where multiple processes can run concurrently without any race conditions, and having the final statistics (like context switches and waiting times) match the actual execution perfectly.
 ---
 
 **End of Documentation**
