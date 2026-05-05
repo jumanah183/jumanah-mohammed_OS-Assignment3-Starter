@@ -105,6 +105,12 @@ Document your development process with **minimum 3 entries** showing progression
 - What incorrect behavior could occur?
 
 **Your Answer**:
+In the original code, race conditions occur when multiple threads try to modify shared variables simultaneously.
+1.	Shared Counters (contextSwitchCount & completedProcessCount):
+• Shared Resource: Integer variables in the SharedResources class.
+• Problem: The increment operation (e.g., count++) is not atomic; it involves three steps: read, increment, and write.
+• Incorrect Behavior: If two threads execute this at once, they might both read the same initial value, resulting in one increment being "lost" (Lost Update).
+• Code Example: contextSwitchCount++;
 
 [Your answer here - 4-6 sentences with code examples]
 
@@ -114,7 +120,13 @@ Document your development process with **minimum 3 entries** showing progression
 **Q**: Explain the difference between ReentrantLock and Semaphore. Where did you use each in your code and why?
 
 **Your Answer**:
-
+In this implementation, I used both tools to handle different synchronization requirements:
+• ReentrantLock (for Data Integrity):
+• Where: Used in SharedResources to protect the counters and the log (e.g., contextSwitchLock, logLock).
+• Why: I used locks because they provide Mutual Exclusion (Mutex). They are designed to ensure that only one thread can enter a "critical section" at a time, which is essential for protecting shared data from corruption during updates.
+• Semaphore (for Resource Management):
+• Where: Used cpuSemaphore in the Process class within the run() and runToCompletion() methods.
+• Why: Semaphores are used for Signaling and Resource Counting. I used a semaphore with one permit to represent the CPU. It ensures that only one process is "permitted" to execute on the CPU at any given time. When a process finishes its quantum, it releases the permit so the next thread can acquire it.
 [Your answer here - explain your implementation choices]
 
 ---
@@ -123,7 +135,10 @@ Document your development process with **minimum 3 entries** showing progression
 **Q**: What is deadlock? Explain TWO prevention techniques and what you did to prevent deadlocks in your code.
 
 **Your Answer**:
-
+A deadlock is a situation where two or more threads are blocked forever, each waiting for a resource held by the other. To prevent this, two common techniques are used:
+1.	Lock Ordering: Ensuring that all threads acquire locks in the same predefined order to avoid circular wait.
+2.	Using Try-Finally Blocks: Ensuring that a lock is always released even if an exception occurs during execution.
+In my code, I prevented deadlocks by strictly using the try-finally pattern. Every time a lock is acquired using lock(), the unlock() method is placed inside a finally block. This guarantees that the resource is never held indefinitely if the thread crashes or encounters an error. Additionally, since I used independent locks for independent resources, I avoided nested locking, which significantly reduces the risk of circular dependencies.
 [Your answer here - reference try-finally blocks, lock ordering, etc.]
 
 ---
@@ -136,7 +151,13 @@ Document your development process with **minimum 3 entries** showing progression
 - Given that the three counters are independent, which approach provides better concurrency and why?
 
 **Your Answer**:
-
+In my implementation, I chose to use separate locks for each counter (Fine-grained locking), such as contextSwitchLock, completedProcessLock, and waitingTimeLock.
+I made this choice because the three counters are independent; incrementing the context switch count does not affect the total waiting time.
+Trade-offs:
+• Coarse-grained (One lock): It is simpler to implement and uses less memory, but it creates a "bottleneck" because threads must wait for each other even if they want to update different, unrelated variables.
+• Fine-grained (Separate locks): It is slightly more complex but allows higher performance.
+Conclusion:
+The fine-grained approach provides better concurrency. Since the counters are independent, multiple threads can now update different counters simultaneously (e.g., one thread updates contextSwitchCount while another updates totalWaitingTime) without blocking each other. This maximizes CPU utilization and reduces thread contention compared to using a single global lock.
 [Your answer here - explain coarse-grained vs fine-grained locking, independence of counters, concurrency implications. Show understanding of when to use each approach. 5-8 sentences expected.]
 
 ---
@@ -145,19 +166,24 @@ Document your development process with **minimum 3 entries** showing progression
 
 ### Critical Section #1: Counter Variables
 
-**Which variables**: 
+**Which variables**: contextSwitchCount, completedProcessCount, and totalWaitingTime.
 
 **Why they need protection**: 
-
-**Synchronization mechanism used**: 
+These are shared global variables modified by multiple threads. Since operations like ++ or += are not atomic (read-modify-write), concurrent access leads to Race Conditions where updates can be lost, resulting in incorrect final statistics.
+**Synchronization mechanism used**: ReentrantLock (specifically fine-grained locks like contextSwitchLock, completedProcessLock, and waitingTimeLock).
 
 **Code snippet**:
 ```java
-// Paste your implementation here
+// contextSwitchLock.lock();
+try {
+    contextSwitchCount++;
+} finally {
+    contextSwitchLock.unlock();
+}Paste your implementation here
 ```
 
 **Justification**: 
-
+I used ReentrantLock to ensure Mutual Exclusion. By using separate locks for each counter (fine-grained locking), I allow different threads to update different counters simultaneously, which improves performance while still guaranteeing data integrity.
 ---
 
 ### Critical Section #2: Execution Log
